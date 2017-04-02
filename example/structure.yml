@@ -1,0 +1,9 @@
+name: table
+colums:
+    - id
+    - first_name
+    - last_name
+defaults:
+    - 0
+    - X
+    - Y

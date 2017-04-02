@@ -1,0 +1,19 @@
+ # Order does not matter? Initial data     Expected data    Expected query
+ - [1, Jane, Doe  ]     # [1, Jane, Doe  ] [1, Jane, Doe  ] N/A
+ - [2, John, Smith]     # [2, John, Smith] [2, John, Smith] N/A
+ - {first_name: Jack}   # [0, Jack, Y    ] [0, Jack, Y    ] N/A
+ # Insertions.
++- [3, Test, Test]      # N/A              [3, Test, Test]  INSERT INTO ...(id, first_name, last_name) VALUES (3, 'Test', 'Test')
++- {last_name: Jackson} # N/A              [0, X, Jackson]  INSERT INTO ...(id, first_name, last_name) VALUES (3, 'Test', 'Test')
+ # Deletions.
+-- [4, Bad, Bad]        # [4, Bad, Bad]    N/A              DELETE FROM ... WHERE id = 4 AND first_name = 'Bad' AND last_name = 'Bad'
+-- {id: 5}              # [5, X, Y]        N/A              DELETE FROM ... WHERE id = 5
+ # Updates.
+-- [5, Old, Old]        # See below.
++- [5, New, New]        # [5, Old, Old]    [5, New, New]    UPDATE ... SET id = 5, first_name = 'New', last_name = 'New' WHERE id = 5 AND first_name = 'Old' AND last_name = 'Old'
+-- {id: 6}              # See below.
++- [6, New, New]        # [6, X,   Y]      [6, New, New]    UPDATE ... SET id = 6, first_name = 'New', last_name = 'New' WHERE id = 6
+-- [7, Old, Old]        # See below.
++- {first_name: New}    # [7, Old, Old]    [7, New, Old]    UPDATE ... SET id = 7, first_name = 'New', last_name = 'Old' WHERE id = 7 AND first_name = 'Old' AND last_name = 'Old'
+-- {id: 8}              # See below.
++- {first_name: New}    # [8, X,   Y]      [8, New, Y]      UPDATE ... SET id = 8, first_name = 'New', last_name = 'Y' WHERE id = 8
